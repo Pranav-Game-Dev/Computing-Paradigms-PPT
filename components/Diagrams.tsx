@@ -1,106 +1,375 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Play, Pause, RefreshCw, Info, Settings2 } from 'lucide-react';
+
+// --- Shared Types & Components ---
+
+interface DiagramProps {
+  isPlaying: boolean;
+  speed: number;
+}
+
+const Tooltip = ({ content, x, y }: { content: string; x: number; y: number }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.9 }}
+    className="absolute z-50 bg-slate-900 border border-slate-700 text-slate-200 text-xs px-2 py-1 rounded shadow-xl pointer-events-none whitespace-nowrap"
+    style={{ left: x, top: y, transform: 'translate(-50%, -120%)' }}
+  >
+    {content}
+  </motion.div>
+);
+
+const LegendItem = ({ color, label }: { color: string; label: string }) => (
+  <div className="flex items-center gap-2 text-xs text-slate-400">
+    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }}></div>
+    <span>{label}</span>
+  </div>
+);
+
+// --- Shell Component ---
+
+interface InteractiveDiagramProps {
+  title: string;
+  caption: string;
+  children: (props: DiagramProps) => React.ReactNode;
+  legendItems?: { color: string; label: string }[];
+}
+
+export const InteractiveDiagram: React.FC<InteractiveDiagramProps> = ({ title, caption, children, legendItems }) => {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [speed, setSpeed] = useState(1);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Auto-pause if reduced motion preference is detected
+  useEffect(() => {
+    if (prefersReducedMotion) setIsPlaying(false);
+  }, [prefersReducedMotion]);
+
+  return (
+    <div className="flex flex-col h-full w-full bg-slate-900/50 rounded-xl border border-slate-700 overflow-hidden shadow-lg">
+      {/* Header */}
+      <div className="flex items-center justify-between p-3 border-b border-slate-700 bg-slate-800/50">
+        <h3 className="font-semibold text-slate-200 text-sm flex items-center gap-2">
+          <Settings2 size={16} className="text-cyan-400" />
+          {title}
+        </h3>
+        <div className="flex items-center gap-2">
+           {/* Speed Controls */}
+          <div className="flex bg-slate-800 rounded p-0.5 border border-slate-600">
+            {[0.5, 1, 2].map((s) => (
+              <button
+                key={s}
+                onClick={() => setSpeed(s)}
+                className={`px-2 py-0.5 text-[10px] font-mono rounded ${speed === s ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                aria-label={`Set speed to ${s}x`}
+              >
+                {s}x
+              </button>
+            ))}
+          </div>
+          {/* Play/Pause */}
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="p-1.5 rounded bg-cyan-600 hover:bg-cyan-500 text-white transition-colors"
+            aria-label={isPlaying ? "Pause animation" : "Play animation"}
+          >
+            {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Visualization Area */}
+      <div className="relative flex-1 bg-slate-950/50 overflow-hidden group">
+        {children({ isPlaying, speed })}
+      </div>
+
+      {/* Footer / Legend */}
+      <div className="p-3 bg-slate-800/30 border-t border-slate-700 flex flex-col md:flex-row gap-3 md:items-center justify-between text-xs">
+        <p className="text-slate-400 italic">{caption}</p>
+        {legendItems && (
+           <div className="flex gap-4 flex-wrap">
+             {legendItems.map((item, i) => <LegendItem key={i} {...item} />)}
+           </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// --- Specific Visualizations ---
+
+export const HpcDiagram: React.FC = () => {
+  return (
+    <InteractiveDiagram
+      title="HPC Architecture"
+      caption="Tightly coupled nodes processing data in parallel with low latency."
+      legendItems={[{ color: '#06b6d4', label: 'Compute Node' }, { color: '#ef4444', label: 'Job/Data' }]}
+    >
+      {({ isPlaying, speed }) => {
+        const [activeNode, setActiveNode] = useState<number | null>(null);
+
+        return (
+          <div className="w-full h-full flex items-center justify-center relative">
+            <svg viewBox="0 0 400 200" className="w-full h-full max-w-lg">
+              {/* Interconnect Mesh */}
+              <g stroke="#1e293b" strokeWidth="2">
+                {[0, 1, 2, 3].map(row => 
+                  <line key={`r-${row}`} x1="100" y1={40 + row * 40} x2="300" y2={40 + row * 40} />
+                )}
+                {[0, 1, 2, 3].map(col => 
+                  <line key={`c-${col}`} x1={100 + col * 66} y1="40" x2={100 + col * 66} y2="160" />
+                )}
+              </g>
+
+              {/* Nodes */}
+              {Array.from({ length: 16 }).map((_, i) => {
+                const row = Math.floor(i / 4);
+                const col = i % 4;
+                const x = 100 + col * 66;
+                const y = 40 + row * 40;
+                
+                return (
+                  <motion.g 
+                    key={i}
+                    onHoverStart={() => setActiveNode(i)}
+                    onHoverEnd={() => setActiveNode(null)}
+                    tabIndex={0}
+                    className="cursor-pointer outline-none"
+                    aria-label={`Node ${i + 1}: ${activeNode === i ? 'Active' : 'Idle'}`}
+                  >
+                    <rect 
+                      x={x - 20} y={y - 15} width="40" height="30" rx="4"
+                      fill="#0f172a" stroke={activeNode === i ? '#22d3ee' : '#334155'} strokeWidth="2"
+                    />
+                    <motion.rect
+                      x={x - 16} y={y - 11} width="32" height="22" rx="2"
+                      fill="#06b6d4"
+                      initial={{ opacity: 0.1 }}
+                      animate={{ opacity: isPlaying ? [0.1, 0.8, 0.1] : 0.1 }}
+                      transition={{ duration: 1 / speed, delay: i * 0.05, repeat: Infinity, repeatDelay: 1 }}
+                    />
+                  </motion.g>
+                )
+              })}
+              
+              {/* Active Data Flow Animation */}
+              {isPlaying && (
+                <motion.circle 
+                   cx="50" cy="100" r="6" fill="#ef4444"
+                   animate={{ 
+                     cx: [50, 200, 200, 350],
+                     opacity: [0, 1, 0, 0] 
+                   }}
+                   transition={{ duration: 2 / speed, repeat: Infinity, ease: "linear" }}
+                />
+              )}
+            </svg>
+            <AnimatePresence>
+              {activeNode !== null && (
+                 <Tooltip x={50} y={50} content={`Node ${activeNode + 1}: 50 GFLOPS | Temp: 45°C`} />
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      }}
+    </InteractiveDiagram>
+  );
+};
+
+export const DistributedDiagram: React.FC = () => {
+  return (
+    <InteractiveDiagram
+      title="Distributed System"
+      caption="Autonomous services communicating via messages over a network."
+      legendItems={[{ color: '#a855f7', label: 'Service' }, { color: '#fbbf24', label: 'Message' }]}
+    >
+      {({ isPlaying, speed }) => {
+        const [hovered, setHovered] = useState<string | null>(null);
+        
+        const services = [
+          { id: 'A', x: 100, y: 100, label: 'Auth' },
+          { id: 'B', x: 200, y: 50, label: 'Data' },
+          { id: 'C', x: 300, y: 100, label: 'Web' },
+          { id: 'D', x: 200, y: 150, label: 'Log' },
+        ];
+
+        return (
+          <div className="w-full h-full flex items-center justify-center relative">
+             <svg viewBox="0 0 400 200" className="w-full h-full max-w-lg">
+                {/* Network Cloud BG */}
+                <path d="M50,100 Q100,20 200,20 T350,100 T200,180 T50,100" fill="none" stroke="#334155" strokeWidth="1" strokeDasharray="4 4" />
+                
+                {/* Links */}
+                <line x1="100" y1="100" x2="200" y2="50" stroke="#475569" strokeWidth="1" />
+                <line x1="200" y1="50" x2="300" y2="100" stroke="#475569" strokeWidth="1" />
+                <line x1="300" y1="100" x2="200" y2="150" stroke="#475569" strokeWidth="1" />
+                <line x1="200" y1="150" x2="100" y2="100" stroke="#475569" strokeWidth="1" />
+
+                {/* Services */}
+                {services.map(s => (
+                  <g 
+                    key={s.id} 
+                    onMouseEnter={() => setHovered(s.id)}
+                    onMouseLeave={() => setHovered(null)}
+                    tabIndex={0}
+                    className="outline-none cursor-help"
+                  >
+                    <circle cx={s.x} cy={s.y} r="25" fill="#1e293b" stroke={hovered === s.id ? '#d8b4fe' : '#a855f7'} strokeWidth="2" />
+                    <text x={s.x} y={s.y} dy="4" textAnchor="middle" fill="#e2e8f0" fontSize="10" fontWeight="bold">{s.label}</text>
+                  </g>
+                ))}
+
+                {/* Messages */}
+                {isPlaying && (
+                  <>
+                    <motion.circle r="4" fill="#fbbf24"
+                      animate={{ cx: [100, 200], cy: [100, 50], opacity: [1, 1] }}
+                      transition={{ duration: 1.5 / speed, repeat: Infinity }}
+                    />
+                    <motion.circle r="4" fill="#fbbf24"
+                      animate={{ cx: [200, 300], cy: [50, 100], opacity: [1, 1] }}
+                      transition={{ duration: 1.5 / speed, delay: 0.5, repeat: Infinity }}
+                    />
+                     <motion.circle r="4" fill="#fbbf24"
+                      animate={{ cx: [300, 200], cy: [100, 150], opacity: [1, 1] }}
+                      transition={{ duration: 1.5 / speed, delay: 1, repeat: Infinity }}
+                    />
+                  </>
+                )}
+             </svg>
+             <AnimatePresence>
+              {hovered && (
+                 <Tooltip x={50} y={50} content={`Service ${hovered}: Online | Latency: 15ms`} />
+              )}
+             </AnimatePresence>
+          </div>
+        )
+      }}
+    </InteractiveDiagram>
+  );
+};
 
 export const ClusterDiagram: React.FC = () => {
   return (
-    <div className="relative w-full h-64 flex items-center justify-center">
-      {/* Central Switch */}
-      <motion.div
-        className="absolute w-24 h-12 bg-slate-700 rounded-lg border border-cyan-500 flex items-center justify-center z-20 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <span className="text-xs font-bold text-cyan-100">SWITCH</span>
-      </motion.div>
-
-      {/* Nodes */}
-      {[0, 1, 2, 3, 4, 5].map((i) => {
-        const angle = (i * 60 * Math.PI) / 180;
-        const radius = 120;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-
+    <InteractiveDiagram
+      title="Cluster Computing"
+      caption="Centralized management with a Head Node and Worker Nodes via LAN."
+      legendItems={[{ color: '#22c55e', label: 'Head Node' }, { color: '#334155', label: 'Worker' }]}
+    >
+      {({ isPlaying, speed }) => {
+        const [hovered, setHovered] = useState<string | null>(null);
         return (
-          <motion.div
-            key={i}
-            className="absolute z-10"
-            initial={{ opacity: 0, x: 0, y: 0 }}
-            animate={{ opacity: 1, x, y }}
-            transition={{ delay: 0.5 + i * 0.1, duration: 0.5, type: 'spring' }}
-          >
-            {/* Connection Line */}
-            <svg className="absolute top-1/2 left-1/2 w-0 h-0 overflow-visible">
-               <motion.line
-                 x1={-x} y1={-y} x2={0} y2={0}
-                 stroke="#475569" strokeWidth="2"
-                 initial={{ pathLength: 0 }}
-                 animate={{ pathLength: 1 }}
-                 transition={{ delay: 1 + i * 0.1, duration: 0.5 }}
-               />
+          <div className="w-full h-full flex items-center justify-center relative">
+            <svg viewBox="0 0 400 200" className="w-full h-full max-w-lg">
+               {/* Connections */}
+               <path d="M200,50 L200,90" stroke="#475569" strokeWidth="2" />
+               <path d="M50,150 L200,90 L350,150" stroke="#475569" strokeWidth="2" />
+               <path d="M150,150 L200,90 L250,150" stroke="#475569" strokeWidth="2" />
+               
+               {/* Switch */}
+               <rect x="160" y="80" width="80" height="20" rx="4" fill="#334155" />
+               <text x="200" y="94" textAnchor="middle" fill="#94a3b8" fontSize="10">SWITCH</text>
+
+               {/* Head Node */}
+               <g 
+                 onMouseEnter={() => setHovered('HEAD')} onMouseLeave={() => setHovered(null)}
+                 className="cursor-pointer"
+               >
+                  <rect x="170" y="10" width="60" height="40" rx="4" fill="#1e293b" stroke={hovered === 'HEAD' ? '#86efac' : '#22c55e'} strokeWidth="2" />
+                  <text x="200" y="35" textAnchor="middle" fill="#fff" fontSize="10">HEAD</text>
+               </g>
+
+               {/* Workers */}
+               {[50, 150, 250, 350].map((x, i) => (
+                  <g key={i} onMouseEnter={() => setHovered(`W${i}`)} onMouseLeave={() => setHovered(null)} className="cursor-pointer">
+                     <rect x={x - 20} y={150} width="40" height="30" rx="2" fill="#1e293b" stroke="#475569" strokeWidth="2" />
+                     <motion.rect 
+                        x={x - 16} y={154} width="32" height="22" rx="1" fill="#22c55e"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: isPlaying ? [0, 0.5, 0] : 0 }}
+                        transition={{ duration: 1 / speed, delay: i * 0.2, repeat: Infinity }}
+                     />
+                  </g>
+               ))}
+               
+               {/* Job Packet */}
+               {isPlaying && (
+                 <motion.circle r="4" fill="#fff"
+                   animate={{ cx: [200, 200, 50], cy: [50, 90, 150] }}
+                   transition={{ duration: 1.5 / speed, repeat: Infinity, ease: "linear" }}
+                 />
+               )}
             </svg>
-            {/* Node Box */}
-            <div className="w-12 h-12 bg-slate-800 border border-slate-600 rounded flex flex-col items-center justify-center transform -translate-x-1/2 -translate-y-1/2">
-                <div className="w-8 h-6 bg-slate-900 mb-1 border-b border-slate-600"></div>
-                <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
-            </div>
-          </motion.div>
-        );
-      })}
-      <div className="absolute bottom-[-40px] text-slate-400 text-sm">Tight Coupling via LAN</div>
-    </div>
+             <AnimatePresence>
+              {hovered === 'HEAD' && <Tooltip x={50} y={20} content="Scheduler & Manager" />}
+              {hovered?.startsWith('W') && <Tooltip x={50} y={20} content="Worker: Processing Task..." />}
+             </AnimatePresence>
+          </div>
+        )
+      }}
+    </InteractiveDiagram>
   );
 };
 
 export const GridDiagram: React.FC = () => {
   return (
-    <div className="relative w-full h-64 flex items-center justify-center">
-      {/* Internet Cloud */}
-      <motion.div
-        className="absolute z-10 opacity-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
-        transition={{ duration: 1 }}
-      >
-        <svg viewBox="0 0 100 100" width="300" height="200" fill="white">
-            <path d="M25,60 Q10,60 10,45 Q10,30 25,30 Q30,10 50,10 Q70,10 75,30 Q90,30 90,45 Q90,60 75,60 Q70,80 50,80 Q30,80 25,60 Z" />
-        </svg>
-      </motion.div>
-
-      {/* Sites */}
-      {['Site A', 'Site B', 'Site C'].map((site, i) => {
-        const xOffset = (i - 1) * 160;
+    <InteractiveDiagram
+      title="Grid Computing"
+      caption="Heterogeneous, dispersed resources managed by a broker."
+      legendItems={[{ color: '#f472b6', label: 'Broker' }, { color: '#60a5fa', label: 'Resource' }]}
+    >
+      {({ isPlaying, speed }) => {
+        const [hovered, setHovered] = useState<string | null>(null);
         return (
-            <motion.div
-                key={site}
-                className="absolute flex flex-col items-center"
-                style={{ x: xOffset }}
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: i * 0.3 }}
-            >
-                <div className="w-20 h-20 rounded-full border-2 border-dashed border-purple-500 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-20">
-                    <span className="text-xs text-purple-300 font-bold">{site}</span>
-                </div>
-                <div className="mt-2 text-[10px] text-slate-500">Resource Domain</div>
-            </motion.div>
-        )
-      })}
+          <div className="w-full h-full flex items-center justify-center relative">
+            <svg viewBox="0 0 400 200" className="w-full h-full max-w-lg">
+               {/* Middleware / Internet */}
+               <ellipse cx="200" cy="100" rx="60" ry="30" fill="none" stroke="#334155" strokeDasharray="4 4" />
+               
+               {/* Broker */}
+               <g onMouseEnter={() => setHovered('BROKER')} onMouseLeave={() => setHovered(null)}>
+                  <polygon points="200,80 220,100 200,120 180,100" fill="#1e293b" stroke="#f472b6" strokeWidth="2" />
+                  <text x="200" y="104" textAnchor="middle" fill="#f472b6" fontSize="8">BROKER</text>
+               </g>
 
-      {/* Connection Arcs */}
-      <svg className="absolute w-full h-full pointer-events-none z-15">
-        <motion.path
-            d="M 170 128 Q 250 80 330 128" /* Hardcoded approximation for 160px spacing centered */
-            fill="none"
-            stroke="#a855f7"
-            strokeWidth="2"
-            strokeDasharray="5,5"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        />
-      </svg>
-      <div className="absolute bottom-[-40px] text-slate-400 text-sm">Loose Coupling via WAN / Middleware</div>
-    </div>
+               {/* Resources (Heterogeneous) */}
+               {/* Site A (Server) */}
+               <g transform="translate(60, 60)" onMouseEnter={() => setHovered('Site A')} onMouseLeave={() => setHovered(null)}>
+                  <rect width="30" height="40" fill="#1e293b" stroke="#60a5fa" strokeWidth="2" />
+                  <path d="M0,20 L30,20" stroke="#60a5fa" />
+               </g>
+               <path d="M90,80 L160,100" stroke="#475569" strokeDasharray="2 2" />
+
+               {/* Site B (PC) */}
+               <g transform="translate(320, 60)" onMouseEnter={() => setHovered('Site B')} onMouseLeave={() => setHovered(null)}>
+                  <rect width="40" height="30" fill="#1e293b" stroke="#60a5fa" strokeWidth="2" rx="4"/>
+                  <rect y="32" x="10" width="20" height="5" fill="#60a5fa" />
+               </g>
+               <path d="M320,80 L240,100" stroke="#475569" strokeDasharray="2 2" />
+
+               {/* Site C (Database) */}
+               <g transform="translate(185, 150)" onMouseEnter={() => setHovered('Site C')} onMouseLeave={() => setHovered(null)}>
+                  <path d="M0,5 Q15,0 30,5 V25 Q15,30 0,25 Z" fill="#1e293b" stroke="#60a5fa" strokeWidth="2" />
+                  <path d="M0,5 Q15,10 30,5" fill="none" stroke="#60a5fa" />
+               </g>
+               <path d="M200,150 L200,130" stroke="#475569" strokeDasharray="2 2" />
+
+               {/* Animated Query */}
+               {isPlaying && (
+                  <motion.circle r="3" fill="#f472b6"
+                     animate={{ cx: [200, 90, 200, 340, 200, 200], cy: [100, 80, 100, 80, 100, 150], opacity: [0,1,1,1,1,0] }}
+                     transition={{ duration: 4 / speed, repeat: Infinity, times: [0, 0.2, 0.4, 0.6, 0.8, 1] }}
+                  />
+               )}
+            </svg>
+            <AnimatePresence>
+               {hovered && <Tooltip x={50} y={20} content={`${hovered}: Available`} />}
+            </AnimatePresence>
+          </div>
+        )
+      }}
+    </InteractiveDiagram>
   );
 };

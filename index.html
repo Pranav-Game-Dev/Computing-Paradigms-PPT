@@ -7,21 +7,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      }
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #0f172a; /* Slate 950 */
+        background-color: #020617; /* Slate 950 */
+        color: #f8fafc;
         overflow: hidden; /* Prevent scrolling during presentation */
       }
-      /* Custom scrollbar for references slide if needed */
+      /* Custom scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #1e293b; 
+        background: #0f172a; 
       }
       ::-webkit-scrollbar-thumb {
-        background: #475569; 
+        background: #334155; 
         border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+      }
+      
+      /* Focus outline for accessibility */
+      *:focus-visible {
+        outline: 2px solid #06b6d4;
+        outline-offset: 2px;
       }
     </style>
   <script type="importmap">
