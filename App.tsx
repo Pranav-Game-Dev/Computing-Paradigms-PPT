@@ -69,20 +69,24 @@ const HPCIntroduction = () => (
       <div className="space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-cyan-500">
           <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
-          <p>Aggregated computing power solving complex problems through massive parallelism and high-speed interconnects.</p>
+          <p>Processing data and complex calculations at high speeds using supercomputers and parallel processing (measured in FLOPS).</p>
         </div>
-        <ul className="space-y-4">
+        <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-cyan-400 rounded-full shrink-0" />
-            <span><strong>Metric:</strong> Measured in FLOPS (Floating Point Operations Per Second).</span>
+            <span><strong>Massive Parallelism:</strong> Utilization of thousands of processors to execute trillions of operations per second.</span>
           </li>
           <li className="flex items-start gap-3">
              <div className="mt-1.5 w-2 h-2 bg-cyan-400 rounded-full shrink-0" />
-            <span><strong>Hardware:</strong> Specialized vectors, GPUs, and low-latency interconnects (Infiniband).</span>
+            <span><strong>Architecture:</strong> Compute nodes (CPU/GPU) linked via low-latency interconnects (InfiniBand).</span>
           </li>
           <li className="flex items-start gap-3">
              <div className="mt-1.5 w-2 h-2 bg-cyan-400 rounded-full shrink-0" />
-            <span><strong>Use Cases:</strong> Weather forecasting, molecular dynamics, nuclear simulations.</span>
+            <span><strong>Workflow:</strong> Problem decomposition &rarr; Parallel execution &rarr; Result aggregation.</span>
+          </li>
+          <li className="flex items-start gap-3">
+             <div className="mt-1.5 w-2 h-2 bg-cyan-400 rounded-full shrink-0" />
+            <span><strong>Applications:</strong> Weather forecasting, molecular dynamics, nuclear simulations.</span>
           </li>
         </ul>
       </div>
@@ -101,21 +105,27 @@ const DistributedComp = () => (
       </div>
       <div className="order-1 lg:order-2 space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-purple-500">
-           <h3 className="text-xl font-bold text-white mb-2">Core Concept</h3>
-           <p>A collection of independent computers that appear to the user as a single coherent system (Transparency).</p>
+           <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
+           <p>A task is divided into subtasks and executed on multiple networked computers acting as a single coherent system.</p>
         </div>
-        <ul className="space-y-4">
+        <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
-            <span><strong>Architecture:</strong> Loosely coupled nodes communicating via message passing.</span>
+            <span><strong>Transparency:</strong> Users perceive a single entity; system handles location and replication details.</span>
           </li>
           <li className="flex items-start gap-3">
              <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
-            <span><strong>No Shared Clock:</strong> Synchronization and consensus are critical challenges (CAP Theorem).</span>
+            <span><strong>Key Traits:</strong> Resource Sharing, Concurrency, Scalability, and Fault Tolerance.</span>
           </li>
           <li className="flex items-start gap-3">
              <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
-            <span><strong>Goals:</strong> Scalability, reliability, and resource sharing over WAN.</span>
+            <span><strong>Architecture:</strong>
+                <span className="text-slate-400 block ml-1 text-sm">- Hardware (Nodes) &rarr; Middleware (RPC, RMI) &rarr; Apps.</span>
+            </span>
+          </li>
+           <li className="flex items-start gap-3">
+             <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
+            <span><strong>Types:</strong> Client-Server, Peer-to-Peer (P2P).</span>
           </li>
         </ul>
       </div>
@@ -128,21 +138,27 @@ const ClusterComp = () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
       <div className="space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-green-500">
-           <h3 className="text-xl font-bold text-white mb-2">Architecture</h3>
-           <p>Tightly or loosely coupled computers (nodes) working together as a single system, typically in a LAN.</p>
+           <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
+           <p>Multiple computers (nodes) connected via high-speed LAN working together as a single, managed system.</p>
         </div>
-        <ul className="space-y-4">
+        <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-green-400 rounded-full shrink-0" />
-            <span><strong>COTS Hardware:</strong> Built using Commodity Off-The-Shelf components (Cost-effective).</span>
+            <span><strong>Characteristics:</strong>
+                <ul className="list-disc pl-4 mt-1 text-slate-400">
+                    <li><strong>Parallel Processing:</strong> Load balancing across nodes.</li>
+                    <li><strong>High Availability (HA):</strong> Redundancy for fault tolerance.</li>
+                    <li><strong>SSI:</strong> Single System Image management.</li>
+                </ul>
+            </span>
           </li>
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-green-400 rounded-full shrink-0" />
-            <span><strong>Single System Image (SSI):</strong> Middleware makes the cluster look like one machine.</span>
+            <span><strong>Hardware:</strong> Typically built using cost-effective COTS components.</span>
           </li>
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-green-400 rounded-full shrink-0" />
-            <span><strong>Types:</strong> High Availability (HA), Load Balancing, and High Performance (Beowulf).</span>
+            <span><strong>Cloud Context:</strong> Implemented via VMs or containers (e.g., Kubernetes).</span>
           </li>
         </ul>
       </div>
@@ -161,21 +177,23 @@ const GridComp = () => (
       </div>
       <div className="order-1 lg:order-2 space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-pink-500">
-          <h3 className="text-xl font-bold text-white mb-2">The "Power Grid" Analogy</h3>
-          <p>Coordinated resource sharing and problem solving in dynamic, multi-institutional virtual organizations.</p>
+          <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
+          <p>Integrating geographically dispersed, heterogeneous, and loosely coupled resources into a unified system.</p>
         </div>
-        <ul className="space-y-4">
+        <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-pink-400 rounded-full shrink-0" />
-            <span><strong>Heterogeneity:</strong> Diverse hardware, OS, and policies across administrative domains.</span>
+            <span><strong>Key Characteristics:</strong>
+                 <ul className="list-disc pl-4 mt-1 text-slate-400">
+                    <li><strong>Decentralized:</strong> Participating sites retain autonomy.</li>
+                    <li><strong>Heterogeneity:</strong> Diverse hardware/OS support.</li>
+                    <li><strong>Resource Sharing:</strong> Dynamic, multi-institutional pools.</li>
+                 </ul>
+            </span>
           </li>
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-pink-400 rounded-full shrink-0" />
-            <span><strong>Middleware:</strong> Globus Toolkit or similar layers manage security and resource discovery.</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="mt-1.5 w-2 h-2 bg-pink-400 rounded-full shrink-0" />
-            <span><strong>Example:</strong> LHC Computing Grid (analyzing particle collision data worldwide).</span>
+            <span><strong>Architecture:</strong> Layers &rarr; Fabric, Connectivity, Resource, Collective, Application.</span>
           </li>
         </ul>
       </div>
@@ -258,11 +276,46 @@ const Conclusion = () => (
              </ul>
           </motion.div>
        </div>
-       <div className="flex items-center justify-center">
-          <div className="text-center text-slate-400">
-            <div className="text-6xl mb-4 opacity-20">🌐</div>
-            <p className="text-xl font-light">"The Network is the Computer"</p>
-          </div>
+       
+       {/* Visual Replacement for Text */}
+       <div className="flex items-center justify-center h-[350px] relative">
+          <div className="absolute inset-0 bg-slate-900/30 rounded-full blur-3xl"></div>
+          {/* Abstract Global Network SVG */}
+          <motion.svg 
+            viewBox="0 0 200 200" 
+            className="w-full h-full max-w-sm drop-shadow-2xl"
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          >
+             <defs>
+                <radialGradient id="globeGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#0f172a" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#1e293b" stopOpacity="0.2" />
+                </radialGradient>
+             </defs>
+             <circle cx="100" cy="100" r="80" fill="url(#globeGrad)" stroke="#334155" strokeWidth="1" />
+             
+             {/* Nodes on globe */}
+             {[...Array(8)].map((_, i) => (
+                 <g key={i} transform={`rotate(${i * 45} 100 100)`}>
+                    <line x1="100" y1="100" x2="100" y2="40" stroke="#06b6d4" strokeWidth="0.5" strokeOpacity="0.5" />
+                    <circle cx="100" cy="40" r="3" fill="#06b6d4" />
+                 </g>
+             ))}
+              {[...Array(6)].map((_, i) => (
+                 <g key={`inner-${i}`} transform={`rotate(${i * 60 + 15} 100 100)`}>
+                    <line x1="100" y1="100" x2="100" y2="60" stroke="#a855f7" strokeWidth="0.5" strokeOpacity="0.5" />
+                    <circle cx="100" cy="60" r="2" fill="#a855f7" />
+                 </g>
+             ))}
+             
+             {/* Connections */}
+             <path d="M100,40 Q140,60 100,160" fill="none" stroke="#22d3ee" strokeWidth="0.5" strokeOpacity="0.3" />
+             <path d="M40,100 Q60,140 160,100" fill="none" stroke="#e879f9" strokeWidth="0.5" strokeOpacity="0.3" />
+
+          </motion.svg>
+          <div className="absolute font-mono text-xs text-slate-500 bottom-0 tracking-widest uppercase">Global Connectivity</div>
        </div>
     </div>
   </SlideLayout>
@@ -310,7 +363,7 @@ const ThankYou = () => (
        transition={{ delay: 0.5, duration: 0.5 }}
        className="z-10 space-y-4"
      >
-       <p className="text-slate-300 text-2xl font-light">Questions?</p>
+       <p className="text-slate-300 text-2xl font-light">Any Questions?</p>
        <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 mx-auto rounded-full"></div>
      </motion.div>
   </div>
