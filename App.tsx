@@ -9,10 +9,10 @@ import { TeamMember } from './types';
 
 const teamMembers: TeamMember[] = [
   { name: 'Dabhi Pranav', id: '1036' },
-  { name: 'Parekh Ishit', id: '1183' },
+  { name: 'Parikh Ishit', id: '1183' },
   { name: 'Dodiya Manav', id: '1160' },
   { name: 'Yagnik Krupali', id: '1173' },
-  { name: 'Pari', id: '----' },
+  { name: 'Payal Gadhvi', id: '1168' },
 ];
 
 const references = [
@@ -69,7 +69,7 @@ const HPCIntroduction = () => (
       <div className="space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-cyan-500">
           <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
-          <p>Processing data and complex calculations at high speeds using supercomputers and parallel processing (measured in FLOPS).</p>
+          <p>Processing data and complex calculations at very high speeds using supercomputers and parallel processing (measured in FLOPS).</p>
         </div>
         <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
@@ -100,7 +100,7 @@ const HPCIntroduction = () => (
 const DistributedComp = () => (
   <SlideLayout title="Distributed Computing" subtitle="Decentralized Coordination">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
-      <div className="space-y-6 text-lg text-slate-300">
+      <div className="space-y-6 text-lg text-slate-300 order-1">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-purple-500">
            <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
            <p>A task is divided into subtasks and executed on multiple networked computers acting as a single coherent system.</p>
@@ -126,7 +126,7 @@ const DistributedComp = () => (
           </li>
         </ul>
       </div>
-      <div className="h-[350px]">
+      <div className="h-[350px] order-2 lg:order-2">
         <DistributedDiagram />
       </div>
     </div>
@@ -136,7 +136,7 @@ const DistributedComp = () => (
 const ClusterComp = () => (
   <SlideLayout title="Cluster Computing" subtitle="Commodity & Homogeneity">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
-      <div className="space-y-6 text-lg text-slate-300">
+      <div className="space-y-6 text-lg text-slate-300 order-1">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-green-500">
            <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
            <p>A group of linked computers working together closely so they form a single integrated computing resource (Single System Image).</p>
@@ -160,7 +160,7 @@ const ClusterComp = () => (
           </li>
         </ul>
       </div>
-      <div className="h-[350px]">
+      <div className="h-[350px] order-2 lg:order-2">
         <ClusterDiagram />
       </div>
     </div>
@@ -170,7 +170,7 @@ const ClusterComp = () => (
 const GridComp = () => (
   <SlideLayout title="Grid Computing" subtitle="Virtual Organizations">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
-      <div className="space-y-6 text-lg text-slate-300">
+      <div className="space-y-6 text-lg text-slate-300 order-1">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-pink-500">
           <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
           <p>Integrating geographically dispersed, heterogeneous resources to form a large-scale, loose-coupled virtual computing system.</p>
@@ -194,7 +194,7 @@ const GridComp = () => (
           </li>
         </ul>
       </div>
-      <div className="h-[350px]">
+      <div className="h-[350px] order-2 lg:order-2">
         <GridDiagram />
       </div>
     </div>
@@ -345,14 +345,23 @@ const ReferencesSlide = () => (
 const ThankYou = () => (
   <div className="flex flex-col items-center justify-center h-full text-center relative overflow-hidden w-full">
      <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
-        <div className="w-[800px] h-[800px] bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-[100px] animate-pulse"></div>
+        {/* Corrected logic: broken into multiple lines to prevent syntax errors in various editors */}
+        <div className={`
+            w-[800px] h-[800px] 
+            bg-gradient-to-r from-cyan-500/20 to-purple-500/20 
+            rounded-full blur-[100px] animate-pulse
+        `}></div>
      </div>
      
      <motion.h1 
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.8, ease: "backOut" }}
-      className="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-purple-300 mb-8 z-10"
+      className={`
+        text-8xl md:text-9xl font-black 
+        text-transparent bg-clip-text bg-gradient-to-r 
+        from-cyan-300 via-white to-purple-300 mb-8 z-10
+      `}
      >
       Thank You
      </motion.h1>
@@ -389,13 +398,16 @@ export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const startPresentation = () => {
+    // Attempt fullscreen on the document root to work reliably within the event handler
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+        element.requestFullscreen().catch((err) => {
+            console.warn("Fullscreen blocked:", err);
+        });
+    }
+
     setStarted(true);
     setActiveSlide(0);
-    if (containerRef.current) {
-      containerRef.current.requestFullscreen().catch((err) => {
-        console.warn("Fullscreen blocked:", err);
-      });
-    }
   };
 
   const nextSlide = useCallback(() => {
@@ -504,9 +516,12 @@ export default function App() {
             </button>
             <button 
                 onClick={(e) => { 
-                e.stopPropagation(); 
-                if (!document.fullscreenElement) containerRef.current?.requestFullscreen();
-                else document.exitFullscreen();
+                  e.stopPropagation(); 
+                  if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => console.warn(err));
+                  } else {
+                    document.exitFullscreen();
+                  }
                 }}
                 className="p-2 bg-slate-800 hover:bg-slate-700 rounded-full text-slate-300 hover:text-white transition-colors ml-2"
                 aria-label="Toggle Fullscreen"
