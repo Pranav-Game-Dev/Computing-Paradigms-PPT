@@ -100,10 +100,7 @@ const HPCIntroduction = () => (
 const DistributedComp = () => (
   <SlideLayout title="Distributed Computing" subtitle="Decentralized Coordination">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
-      <div className="order-2 lg:order-1 h-[350px]">
-        <DistributedDiagram />
-      </div>
-      <div className="order-1 lg:order-2 space-y-6 text-lg text-slate-300">
+      <div className="space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-purple-500">
            <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
            <p>A task is divided into subtasks and executed on multiple networked computers acting as a single coherent system.</p>
@@ -111,7 +108,7 @@ const DistributedComp = () => (
         <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
-            <span><strong>Transparency:</strong> Users perceive a single entity; system handles location and replication details.</span>
+            <span><strong>Transparency:</strong> Users perceive a single entity; system handles location and replication details invisibly.</span>
           </li>
           <li className="flex items-start gap-3">
              <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
@@ -120,14 +117,17 @@ const DistributedComp = () => (
           <li className="flex items-start gap-3">
              <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
             <span><strong>Architecture:</strong>
-                <span className="text-slate-400 block ml-1 text-sm">- Hardware (Nodes) &rarr; Middleware (RPC, RMI) &rarr; Apps.</span>
+                <span className="text-slate-400 block ml-1 text-sm">Nodes &rarr; Middleware (RPC, RMI) &rarr; Application Layer.</span>
             </span>
           </li>
            <li className="flex items-start gap-3">
              <div className="mt-1.5 w-2 h-2 bg-purple-400 rounded-full shrink-0" />
-            <span><strong>Types:</strong> Client-Server, Peer-to-Peer (P2P).</span>
+            <span><strong>Types:</strong> Client-Server systems and Peer-to-Peer (P2P) networks like Blockchain.</span>
           </li>
         </ul>
+      </div>
+      <div className="h-[350px]">
+        <DistributedDiagram />
       </div>
     </div>
   </SlideLayout>
@@ -139,26 +139,24 @@ const ClusterComp = () => (
       <div className="space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-green-500">
            <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
-           <p>Multiple computers (nodes) connected via high-speed LAN working together as a single, managed system.</p>
+           <p>A group of linked computers working together closely so they form a single integrated computing resource (Single System Image).</p>
         </div>
         <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-green-400 rounded-full shrink-0" />
-            <span><strong>Characteristics:</strong>
-                <ul className="list-disc pl-4 mt-1 text-slate-400">
-                    <li><strong>Parallel Processing:</strong> Load balancing across nodes.</li>
-                    <li><strong>High Availability (HA):</strong> Redundancy for fault tolerance.</li>
-                    <li><strong>SSI:</strong> Single System Image management.</li>
-                </ul>
-            </span>
+            <span><strong>Single System Image (SSI):</strong> Middleware abstracts complexity, making multiple nodes appear as one powerful machine.</span>
           </li>
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-green-400 rounded-full shrink-0" />
-            <span><strong>Hardware:</strong> Typically built using cost-effective COTS components.</span>
+            <span><strong>Architecture:</strong> Centralized management via a Head Node that schedules tasks on homogeneous Worker Nodes.</span>
           </li>
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-green-400 rounded-full shrink-0" />
-            <span><strong>Cloud Context:</strong> Implemented via VMs or containers (e.g., Kubernetes).</span>
+            <span><strong>Key Advantages:</strong> High Availability (failover support), Load Balancing, and cost-effective scaling using commodity hardware.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <div className="mt-1.5 w-2 h-2 bg-green-400 rounded-full shrink-0" />
+            <span><strong>Use Cases:</strong> High-Availability (HA) web servers, High-Performance (HPC) simulation clusters, and Kubernetes.</span>
           </li>
         </ul>
       </div>
@@ -172,30 +170,32 @@ const ClusterComp = () => (
 const GridComp = () => (
   <SlideLayout title="Grid Computing" subtitle="Virtual Organizations">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
-      <div className="order-2 lg:order-1 h-[350px]">
-        <GridDiagram />
-      </div>
-      <div className="order-1 lg:order-2 space-y-6 text-lg text-slate-300">
+      <div className="space-y-6 text-lg text-slate-300">
         <div className="bg-slate-800/40 p-6 rounded-lg border-l-4 border-pink-500">
           <h3 className="text-xl font-bold text-white mb-2">Definition</h3>
-          <p>Integrating geographically dispersed, heterogeneous, and loosely coupled resources into a unified system.</p>
+          <p>Integrating geographically dispersed, heterogeneous resources to form a large-scale, loose-coupled virtual computing system.</p>
         </div>
         <ul className="space-y-4 text-base">
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-pink-400 rounded-full shrink-0" />
-            <span><strong>Key Characteristics:</strong>
-                 <ul className="list-disc pl-4 mt-1 text-slate-400">
-                    <li><strong>Decentralized:</strong> Participating sites retain autonomy.</li>
-                    <li><strong>Heterogeneity:</strong> Diverse hardware/OS support.</li>
-                    <li><strong>Resource Sharing:</strong> Dynamic, multi-institutional pools.</li>
-                 </ul>
-            </span>
+            <span><strong>Virtual Organizations:</strong> Dynamic collections of individuals and institutions sharing resources under defined rules.</span>
           </li>
           <li className="flex items-start gap-3">
             <div className="mt-1.5 w-2 h-2 bg-pink-400 rounded-full shrink-0" />
-            <span><strong>Architecture:</strong> Layers &rarr; Fabric, Connectivity, Resource, Collective, Application.</span>
+            <span><strong>Decentralization & Heterogeneity:</strong> Resources span administrative domains and vary in OS/Hardware (e.g., Servers + PCs).</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <div className="mt-1.5 w-2 h-2 bg-pink-400 rounded-full shrink-0" />
+            <span><strong>Architecture Layers:</strong> Fabric (Hardware) &rarr; Connectivity &rarr; Resource &rarr; Collective &rarr; Application.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <div className="mt-1.5 w-2 h-2 bg-pink-400 rounded-full shrink-0" />
+            <span><strong>Utility Model:</strong> Provides computing power on demand, suitable for large collaborative science like CERN LHC.</span>
           </li>
         </ul>
+      </div>
+      <div className="h-[350px]">
+        <GridDiagram />
       </div>
     </div>
   </SlideLayout>
